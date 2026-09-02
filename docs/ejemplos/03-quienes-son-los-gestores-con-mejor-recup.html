@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gestores con mejor recuperacion — 3T 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --tinta:#1b1c1e;
+    --suave:#6b6f76;
+    --acento:#0f766e;
+    --acento-tenue:#d9ede9;
+    --linea:#e7e4df;
+    --fondo:#faf9f7;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:var(--fondo);
+    color:var(--tinta);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:3vh 4vw;
+  }
+  .panel{
+    width:100%;
+    max-width:960px;
+  }
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    border-bottom:1px solid var(--linea);
+    padding-bottom:1.4rem;
+    margin-bottom:2rem;
+  }
+  h1{
+    font-size:1.5rem;
+    font-weight:700;
+    letter-spacing:-0.01em;
+  }
+  header .sub{
+    font-size:.82rem;
+    color:var(--suave);
+    margin-top:.35rem;
+  }
+  .corte{
+    font-size:.82rem;
+    color:var(--suave);
+    text-align:right;
+    white-space:nowrap;
+  }
+  .corte strong{
+    display:block;
+    color:var(--tinta);
+    font-size:.95rem;
+    font-weight:600;
+  }
+  ul{list-style:none;}
+  li{
+    display:grid;
+    grid-template-columns:2rem 12rem 1fr auto;
+    align-items:center;
+    gap:1.4rem;
+    padding:1rem 0;
+    border-bottom:1px solid var(--linea);
+  }
+  li:last-child{border-bottom:none;}
+  .rank{
+    font-size:1rem;
+    font-weight:600;
+    color:var(--suave);
+    text-align:center;
+  }
+  li.top .rank{color:var(--acento);}
+  .nombre{
+    font-size:.98rem;
+    font-weight:600;
+    line-height:1.25;
+  }
+  .equipo{
+    font-size:.75rem;
+    font-weight:500;
+    color:var(--suave);
+    margin-top:.15rem;
+  }
+  .barra svg{display:block;width:100%;height:22px;}
+  .meta{
+    font-size:.74rem;
+    color:var(--suave);
+    margin-top:.45rem;
+  }
+  .monto{
+    font-size:1.6rem;
+    font-weight:700;
+    letter-spacing:-0.02em;
+    text-align:right;
+    font-variant-numeric:tabular-nums;
+  }
+  li.top .monto{color:var(--acento);}
+  .monto span{
+    display:block;
+    font-size:.7rem;
+    font-weight:500;
+    color:var(--suave);
+    letter-spacing:0;
+  }
+  footer{
+    margin-top:1.8rem;
+    font-size:.8rem;
+    color:var(--suave);
+    display:flex;
+    justify-content:space-between;
+  }
+  footer strong{color:var(--tinta);font-weight:600;}
+</style>
+</head>
+<body>
+<div class="panel">
+  <header>
+    <div>
+      <h1>Gestores con mejor recuperacion</h1>
+      <div class="sub">Tercer trimestre 2026 · periodo del 1 jul al 1 sep de 2026 · ordenado por monto recuperado</div>
+    </div>
+    <div class="corte">
+      Fecha de corte
+      <strong>1 de septiembre de 2026</strong>
+    </div>
+  </header>
+
+  <ul>
+    <li class="top">
+      <div class="rank">1</div>
+      <div>
+        <div class="nombre">Araceli Villanueva</div>
+        <div class="equipo">Equipo Tardia</div>
+      </div>
+      <div class="barra">
+        <svg viewBox="0 0 100 22" preserveAspectRatio="none">
+          <rect x="0" y="4" width="100" height="14" rx="3" fill="var(--acento-tenue)"/>
+          <rect x="0" y="4" width="100" height="14" rx="3" fill="var(--acento)"/>
+        </svg>
+        <div class="meta">63 cuentas gestionadas · 64 pagos · 57.1% de promesas cumplidas</div>
+      </div>
+      <div class="monto">$3,459,385<span>MXN recuperados</span></div>
+    </li>
+
+    <li>
+      <div class="rank">2</div>
+      <div>
+        <div class="nombre">Alberto Hernan Guevara</div>
+        <div class="equipo">Equipo Temprana</div>
+      </div>
+      <div class="barra">
+        <svg viewBox="0 0 100 22" preserveAspectRatio="none">
+          <rect x="0" y="4" width="100" height="14" rx="3" fill="var(--acento-tenue)"/>
+          <rect x="0" y="4" width="83.6" height="14" rx="3" fill="var(--acento)"/>
+        </svg>
+        <div class="meta">59 cuentas gestionadas · 80 pagos · 47.2% de promesas cumplidas</div>
+      </div>
+      <div class="monto">$2,890,725<span>MXN recuperados</span></div>
+    </li>
+
+    <li>
+      <div class="rank">3</div>
+      <div>
+        <div class="nombre">Sra. Noemi Farias</div>
+        <div class="equipo">Equipo Tardia</div>
+      </div>
+      <div class="barra">
+        <svg viewBox="0 0 100 22" preserveAspectRatio="none">
+          <rect x="0" y="4" width="100" height="14" rx="3" fill="var(--acento-tenue)"/>
+          <rect x="0" y="4" width="73.8" height="14" rx="3" fill="var(--acento)"/>
+        </svg>
+        <div class="meta">71 cuentas gestionadas · 78 pagos · 68.8% de promesas cumplidas</div>
+      </div>
+      <div class="monto">$2,551,510<span>MXN recuperados</span></div>
+    </li>
+
+    <li>
+      <div class="rank">4</div>
+      <div>
+        <div class="nombre">Dario Canales</div>
+        <div class="equipo">Equipo Media</div>
+      </div>
+      <div class="barra">
+        <svg viewBox="0 0 100 22" preserveAspectRatio="none">
+          <rect x="0" y="4" width="100" height="14" rx="3" fill="var(--acento-tenue)"/>
+          <rect x="0" y="4" width="58.7" height="14" rx="3" fill="var(--acento)"/>
+        </svg>
+        <div class="meta">61 cuentas gestionadas · 77 pagos · 45.3% de promesas cumplidas</div>
+      </div>
+      <div class="monto">$2,031,344<span>MXN recuperados</span></div>
+    </li>
+
+    <li>
+      <div class="rank">5</div>
+      <div>
+        <div class="nombre">Gabriel Santiago</div>
+        <div class="equipo">Equipo Media</div>
+      </div>
+      <div class="barra">
+        <svg viewBox="0 0 100 22" preserveAspectRatio="none">
+          <rect x="0" y="4" width="100" height="14" rx="3" fill="var(--acento-tenue)"/>
+          <rect x="0" y="4" width="53.6" height="14" rx="3" fill="var(--acento)"/>
+        </svg>
+        <div class="meta">51 cuentas gestionadas · 45 pagos · 73.5% de promesas cumplidas</div>
+      </div>
+      <div class="monto">$1,855,546<span>MXN recuperados</span></div>
+    </li>
+
+    <li>
+      <div class="rank">6</div>
+      <div>
+        <div class="nombre">Alma Alicia Caban</div>
+        <div class="equipo">Equipo Temprana</div>
+      </div>
+      <div class="barra">
+        <svg viewBox="0 0 100 22" preserveAspectRatio="none">
+          <rect x="0" y="4" width="100" height="14" rx="3" fill="var(--acento-tenue)"/>
+          <rect x="0" y="4" width="47.8" height="14" rx="3" fill="var(--acento)"/>
+        </svg>
+        <div class="meta">54 cuentas gestionadas · 57 pagos · 71.4% de promesas cumplidas</div>
+      </div>
+      <div class="monto">$1,651,869<span>MXN recuperados</span></div>
+    </li>
+  </ul>
+
+  <footer>
+    <span>Top 3 del trimestre: <strong>Araceli Villanueva</strong>, <strong>Alberto Hernan Guevara</strong> y <strong>Sra. Noemi Farias</strong>.</span>
+    <span>Recuperacion total del equipo: <strong>$14,440,378 MXN</strong></span>
+  </footer>
+</div>
+</body>
+</html>

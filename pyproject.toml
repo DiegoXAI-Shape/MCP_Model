@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "mcp-cobranza"
 version = "0.1.0"
@@ -12,6 +16,9 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=9"]
+
+[tool.setuptools]
+py-modules = ["seed", "tools_core", "server", "host"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

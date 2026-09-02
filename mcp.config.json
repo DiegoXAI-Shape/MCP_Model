@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "cartera": {
+      "command": "venv\\Scripts\\python.exe",
+      "args": ["server.py"]
+    }
+  }
+}

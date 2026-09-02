@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel de Cartera Generativo &mdash; interfaces</title>
+<style>
+  :root { color-scheme: light; }
+  body { font: 16px/1.5 -apple-system, "Segoe UI", system-ui, sans-serif;
+         max-width: 760px; margin: 3rem auto; padding: 0 1.25rem; color: #1a1a1a; }
+  h1 { font-size: 1.4rem; margin-bottom: .25rem; }
+  p.sub { color: #666; margin-top: 0; }
+  ul { list-style: none; padding: 0; }
+  li { padding: 1rem 0; border-top: 1px solid #e6e6e6; }
+  li a { font-size: 1.05rem; color: #1552d6; text-decoration: none; }
+  li a:hover { text-decoration: underline; }
+  .meta { color: #888; font-size: .82rem; margin-top: .3rem; }
+  .meta code { background: #f2f2f2; padding: .05rem .35rem; border-radius: 4px; }
+</style>
+</head>
+<body>
+  <h1>Panel de Cartera Generativo</h1>
+  <p class="sub">Interfaces generadas bajo demanda sobre la cartera de cobranza sintetica.</p>
+  <ul>
+    <li>
+      <a href="04-ensename-las-8-cuentas-con-mayor-saldo-v.html">Ensename las 8 cuentas con mayor saldo vencido a mas de 90 dias.</a>
+      <div class="meta">2026-09-01T20:35:03 &middot; claude-sonnet-5
+        &middot; <code>list_accounts</code> <code>portfolio_summary</code></div>
+    </li>
+    <li>
+      <a href="03-quienes-son-los-gestores-con-mejor-recup.html">Quienes son los gestores con mejor recuperacion este trimestre?</a>
+      <div class="meta">2026-09-01T20:34:23 &middot; claude-sonnet-5
+        &middot; <code>collector_stats</code></div>
+    </li>
+    <li>
+      <a href="02-muestrame-la-distribucion-de-la-cartera-.html">Muestrame la distribucion de la cartera por antiguedad de mora (aging).</a>
+      <div class="meta">2026-09-01T20:33:41 &middot; claude-sonnet-5
+        &middot; <code>aging</code> <code>portfolio_summary</code></div>
+    </li>
+    <li>
+      <a href="01-dame-un-resumen-ejecutivo-de-la-cartera-.html">Dame un resumen ejecutivo de la cartera de cobranza.</a>
+      <div class="meta">2026-09-01T20:33:00 &middot; claude-sonnet-5
+        &middot; <code>aging</code> <code>cashflow</code> <code>collector_stats</code> <code>portfolio_summary</code></div>
+    </li>
+  </ul>
+</body>
+</html>

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cuentas con mayor saldo vencido a mas de 90 dias</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --tinta:#1a1a1a;
+    --gris:#8a8a8a;
+    --acento:#c0392b;
+    --linea:#e8e6e2;
+    --fondo:#faf9f7;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    background:var(--fondo);
+    color:var(--tinta);
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    padding:2.4vh 3vw;
+  }
+  .panel{
+    width:100%;
+    max-width:1180px;
+  }
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    border-bottom:2px solid var(--tinta);
+    padding-bottom:14px;
+    margin-bottom:8px;
+  }
+  h1{
+    font-size:1.5rem;
+    font-weight:700;
+    letter-spacing:-0.02em;
+  }
+  h1 span{color:var(--acento);}
+  .corte{
+    font-size:.8rem;
+    color:var(--gris);
+    text-align:right;
+    line-height:1.5;
+  }
+  .corte strong{color:var(--tinta);font-weight:600;}
+  .resumen{
+    display:flex;
+    gap:40px;
+    padding:16px 0 22px;
+  }
+  .kpi .n{
+    font-size:2.1rem;
+    font-weight:700;
+    letter-spacing:-0.03em;
+    line-height:1;
+  }
+  .kpi .l{
+    font-size:.72rem;
+    text-transform:uppercase;
+    letter-spacing:.09em;
+    color:var(--gris);
+    margin-top:6px;
+  }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:.86rem;
+  }
+  thead th{
+    font-size:.68rem;
+    text-transform:uppercase;
+    letter-spacing:.09em;
+    color:var(--gris);
+    font-weight:600;
+    text-align:left;
+    padding:10px 12px;
+    border-bottom:1px solid var(--linea);
+  }
+  thead th.num{text-align:right;}
+  tbody td{
+    padding:11px 12px;
+    border-bottom:1px solid var(--linea);
+    vertical-align:middle;
+  }
+  tbody tr:last-child td{border-bottom:none;}
+  .id{color:var(--gris);font-variant-numeric:tabular-nums;}
+  .deudor{font-weight:600;}
+  .sub{font-size:.74rem;color:var(--gris);margin-top:2px;}
+  .saldo{
+    text-align:right;
+    font-weight:700;
+    font-variant-numeric:tabular-nums;
+    white-space:nowrap;
+  }
+  .barra-cell{width:220px;}
+  .barra-track{
+    background:var(--linea);
+    height:8px;
+    border-radius:4px;
+    overflow:hidden;
+  }
+  .barra-fill{
+    height:8px;
+    background:var(--acento);
+    border-radius:4px;
+  }
+  .mora{
+    text-align:right;
+    font-variant-numeric:tabular-nums;
+    white-space:nowrap;
+  }
+  .tag{
+    display:inline-block;
+    font-size:.66rem;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    padding:3px 8px;
+    border-radius:999px;
+    font-weight:600;
+  }
+  .tag.mora-estatus{background:#fdece9;color:var(--acento);}
+  .tag.castigada{background:#efedea;color:var(--gris);}
+  footer{
+    margin-top:18px;
+    font-size:.74rem;
+    color:var(--gris);
+  }
+</style>
+</head>
+<body>
+<div class="panel">
+  <header>
+    <h1>8 cuentas con mayor saldo vencido a <span>mas de 90 dias</span></h1>
+    <div class="corte">
+      Fecha de corte<br><strong>1 de septiembre de 2026</strong>
+    </div>
+  </header>
+
+  <section class="resumen">
+    <div class="kpi">
+      <div class="n">$2,956,660 MXN</div>
+      <div class="l">Saldo sumado de las 8 cuentas</div>
+    </div>
+    <div class="kpi">
+      <div class="n">$617,085 MXN</div>
+      <div class="l">Cuenta de mayor exposicion</div>
+    </div>
+    <div class="kpi">
+      <div class="n">216 dias</div>
+      <div class="l">Mora promedio de las 8</div>
+    </div>
+  </section>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Cuenta</th>
+        <th>Deudor / producto</th>
+        <th class="num">Saldo vencido</th>
+        <th>Peso relativo</th>
+        <th class="num">Dias de mora</th>
+        <th>Estatus</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="id">#237</td>
+        <td>
+          <div class="deudor">Dr. Cesar Aparicio</div>
+          <div class="sub">Credito PyME &middot; San Pilar de la Montana &middot; Alberto Hernan Guevara</div>
+        </td>
+        <td class="saldo">$617,085 MXN</td>
+        <td class="barra-cell">
+          <div class="barra-track"><div class="barra-fill" style="width:100%"></div></div>
+        </td>
+        <td class="mora">108</td>
+        <td><span class="tag mora-estatus">En mora</span></td>
+      </tr>
+      <tr>
+        <td class="id">#396</td>
+        <td>
+          <div class="deudor">Ing. Cristina Briones</div>
+          <div class="sub">Credito PyME &middot; San Daniel los altos &middot; Araceli Villanueva</div>
+        </td>
+        <td class="saldo">$424,434 MXN</td>
+        <td class="barra-cell">
+          <div class="barra-track"><div class="barra-fill" style="width:68.8%"></div></div>
+        </td>
+        <td class="mora">320</td>
+        <td><span class="tag castigada">Castigada</span></td>
+      </tr>
+      <tr>
+        <td class="id">#50</td>
+        <td>
+          <div class="deudor">Lic. Ivan Varela</div>
+          <div class="sub">Credito PyME &middot; Nueva Eslovaquia &middot; Araceli Villanueva</div>
+        </td>
+        <td class="saldo">$381,795 MXN</td>
+        <td class="barra-cell">
+          <div class="barra-track"><div class="barra-fill" style="width:61.9%"></div></div>
+        </td>
+        <td class="mora">274</td>
+        <td><span class="tag castigada">Castigada</span></td>
+      </tr>
+      <tr>
+        <td class="id">#68</td>
+        <td>
+          <div class="deudor">Dolores Santillan</div>
+          <div class="sub">Credito automotriz &middot; San Guillermo los bajos &middot; Gabriel Santiago</div>
+        </td>
+        <td class="saldo">$354,296 MXN</td>
+        <td class="barra-cell">
+          <div class="barra-track"><div class="barra-fill" style="width:57.4%"></div></div>
+        </td>
+        <td class="mora">169</td>
+        <td><span class="tag mora-estatus">En mora</span></td>
+      </tr>
+      <tr>
+        <td class="id">#89</td>
+        <td>
+          <div class="deudor">Esther Zoe Villalpando Sosa</div>
+          <div class="sub">Credito automotriz &middot; San Felipe de la Montana &middot; Alma Alicia Caban</div>
+        </td>
+        <td class="saldo">$335,819 MXN</td>
+        <td class="barra-cell">
+          <div class="barra-track"><div class="barra-fill" style="width:54.4%"></div></div>
+        </td>
+        <td class="mora">293</td>
+        <td><span class="tag castigada">Castigada</span></td>
+      </tr>
+      <tr>
+        <td class="id">#144</td>
+        <td>
+          <div class="deudor">Natalia Soto</div>
+          <div class="sub">Credito automotriz &middot; Vieja San Vicente y las Granadinas &middot; Dario Canales</div>
+        </td>
+        <td class="saldo">$334,692 MXN</td>
+        <td class="barra-cell">
+          <div class="barra-track"><div class="barra-fill" style="width:54.2%"></div></div>
+        </td>
+        <td class="mora">173</td>
+        <td><span class="tag mora-estatus">En mora</span></td>
+      </tr>
+      <tr>
+        <td class="id">#60</td>
+        <td>
+          <div class="deudor">Sra. Ana Maria Trujillo</div>
+          <div class="sub">Credito PyME &middot; Nueva Cote d'Ivoire &middot; Araceli Villanueva</div>
+        </td>
+        <td class="saldo">$293,715 MXN</td>
+        <td class="barra-cell">
+          <div class="barra-track"><div class="barra-fill" style="width:47.6%"></div></div>
+        </td>
+        <td class="mora">231</td>
+        <td><span class="tag castigada">Castigada</span></td>
+      </tr>
+      <tr>
+        <td class="id">#247</td>
+        <td>
+          <div class="deudor">Lic. Oscar Gil</div>
+          <div class="sub">Credito automotriz &middot; San Maria Luisa los bajos &middot; Araceli Villanueva</div>
+        </td>
+        <td class="saldo">$214,823 MXN</td>
+        <td class="barra-cell">
+          <div class="barra-track"><div class="barra-fill" style="width:34.8%"></div></div>
+        </td>
+        <td class="mora">262</td>
+        <td><span class="tag castigada">Castigada</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <footer>
+    Cartera sintetica &middot; bucket 90+ dias &middot; ordenado por saldo vencido &middot; 6 de 8 cuentas gestionadas por 2 gestores (Araceli Villanueva concentra 4).
+  </footer>
+</div>
+</body>
+</html>

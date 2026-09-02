@@ -2,15 +2,17 @@
 host.py -- Genera interfaces minimas de cobranza bajo demanda.
 
 Dada una pregunta en lenguaje natural, Claude consulta la cartera a traves de
-las herramientas del servidor MCP (los esquemas se toman de server.py, la
-ejecucion la hace tools_core) y devuelve una pagina HTML autonoma y minimalista
-que se guarda en out/ junto con una galeria (out/index.html).
+las herramientas del servidor MCP y devuelve una pagina HTML autonoma y
+minimalista que se guarda en out/ junto con una galeria (out/index.html).
+
+Dos motores (--backend):
+  * claude-code (por defecto): usa el CLI `claude` como cliente MCP. No
+    necesita API key; corre con la sesion de Claude Code ya autenticada.
+  * api: llama directo a la Messages API. Necesita ANTHROPIC_API_KEY en .env.
 
     python host.py "Dame un resumen ejecutivo de la cartera"
-    python host.py --demo                 # genera 4 interfaces de ejemplo
-    python host.py --model claude-opus-5 "..."
-
-Requiere ANTHROPIC_API_KEY en el archivo .env.
+    python host.py --demo                       # 4 interfaces de ejemplo
+    python host.py --backend api --model claude-opus-5 "..."
 """
 
 from __future__ import annotations
@@ -20,6 +22,8 @@ import asyncio
 import datetime as dt
 import json
 import re
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -31,6 +35,7 @@ from server import server as mcp_server
 RAIZ = Path(__file__).resolve().parent
 OUT = RAIZ / "out"
 MANIFEST = OUT / "manifest.json"
+MCP_CONFIG = RAIZ / "mcp.config.json"
 
 # Sonnet por defecto: el host se corre muchas veces al iterar y las interfaces
 # que pide son sencillas. Con --model claude-opus-5 sube el acabado visual.
@@ -91,10 +96,76 @@ def ejecutar_tool(nombre: str, args: dict) -> dict:
         return {"error": str(exc)}
 
 
+def _alias_modelo(m: str) -> str:
+    return {"claude-sonnet-5": "sonnet", "claude-opus-5": "opus"}.get(m, m)
+
+
 # --------------------------------------------------------------------------- #
 # Generacion
 # --------------------------------------------------------------------------- #
-def generar(pregunta: str, modelo: str) -> dict:
+def generar(pregunta: str, modelo: str, backend: str) -> dict:
+    if backend == "api":
+        return generar_api(pregunta, modelo)
+    return generar_claude_code(pregunta, modelo)
+
+
+def generar_claude_code(pregunta: str, modelo: str) -> dict:
+    """Usa el CLI `claude` como cliente MCP. Sin API key."""
+    cmd = [
+        "claude", "-p", pregunta,
+        "--mcp-config", str(MCP_CONFIG),
+        "--strict-mcp-config",
+        "--allowedTools", "mcp__cartera",
+        "--tools", "",  # sin herramientas internas (Bash/Read/Write/...)
+        "--append-system-prompt", SYSTEM_PROMPT,
+        "--model", _alias_modelo(modelo),
+        "--output-format", "stream-json", "--verbose",
+    ]
+    proc = subprocess.run(
+        cmd, capture_output=True, text=True, cwd=RAIZ, timeout=300, encoding="utf-8"
+    )
+    if proc.returncode != 0:
+        cola = (proc.stderr or proc.stdout or "").strip()[-600:]
+        raise RuntimeError(f"`claude` fallo (rc={proc.returncode}): {cola}")
+
+    texto = ""
+    tools_usadas: list[str] = []
+    tok_in = tok_out = 0
+    costo = 0.0
+    for linea in proc.stdout.splitlines():
+        linea = linea.strip()
+        if not linea:
+            continue
+        try:
+            ev = json.loads(linea)
+        except json.JSONDecodeError:
+            continue
+        if ev.get("type") == "assistant":
+            for b in ev.get("message", {}).get("content", []):
+                if b.get("type") == "tool_use":
+                    tools_usadas.append(b.get("name", "").split("__")[-1])
+        elif ev.get("type") == "result":
+            if ev.get("is_error"):
+                raise RuntimeError(f"`claude` devolvio error: {ev.get('result') or ev.get('subtype')}")
+            texto = ev.get("result", "") or ""
+            u = ev.get("usage", {}) or {}
+            tok_in = (
+                u.get("input_tokens", 0)
+                + u.get("cache_read_input_tokens", 0)
+                + u.get("cache_creation_input_tokens", 0)
+            )
+            tok_out = u.get("output_tokens", 0)
+            costo = ev.get("total_cost_usd", 0.0) or 0.0
+
+    return {
+        "html": _extraer_html(texto),
+        "tools": sorted({t for t in tools_usadas if t}),
+        "modelo": modelo,
+        "tokens": {"in": tok_in, "out": tok_out, "costo_usd": round(costo, 4)},
+    }
+
+
+def generar_api(pregunta: str, modelo: str) -> dict:
     from anthropic import Anthropic
 
     client = Anthropic()
@@ -139,7 +210,7 @@ def generar(pregunta: str, modelo: str) -> dict:
         "html": html,
         "tools": sorted(set(tools_usadas)),
         "modelo": modelo,
-        "tokens": {"in": tok_in, "out": tok_out},
+        "tokens": {"in": tok_in, "out": tok_out, "costo_usd": None},
     }
 
 
@@ -237,38 +308,57 @@ def _esc(s: str) -> str:
 
 
 # --------------------------------------------------------------------------- #
-def _procesar(pregunta: str, modelo: str) -> None:
+def _procesar(pregunta: str, modelo: str, backend: str) -> None:
     print(f"> {pregunta}")
-    resultado = generar(pregunta, modelo)
+    resultado = generar(pregunta, modelo, backend)
     ruta = guardar(pregunta, resultado)
     tk = resultado["tokens"]
+    costo = f"  [~${tk['costo_usd']}]" if tk.get("costo_usd") else ""
     print(
         f"  {ruta.relative_to(RAIZ)}  "
         f"[tools: {', '.join(resultado['tools']) or 'ninguna'}]  "
-        f"[tokens {tk['in']}+{tk['out']}]\n"
+        f"[tokens {tk['in']}+{tk['out']}]{costo}\n"
     )
 
 
 def main() -> None:
     load_dotenv(RAIZ / ".env")
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     ap.add_argument("pregunta", nargs="?", help="pregunta en lenguaje natural")
     ap.add_argument("--demo", action="store_true", help="genera las 4 interfaces de ejemplo")
-    ap.add_argument("--model", default=MODELO_POR_DEFECTO, help=f"modelo (por defecto {MODELO_POR_DEFECTO})")
+    ap.add_argument(
+        "--backend",
+        choices=["claude-code", "api"],
+        default="claude-code",
+        help="motor de generacion (por defecto claude-code, sin API key)",
+    )
+    ap.add_argument(
+        "--model", default=MODELO_POR_DEFECTO, help=f"modelo (por defecto {MODELO_POR_DEFECTO})"
+    )
     args = ap.parse_args()
 
-    import os
-
-    if not os.environ.get("ANTHROPIC_API_KEY", "").startswith("sk-ant"):
-        sys.exit("Falta ANTHROPIC_API_KEY valida en .env (debe empezar con 'sk-ant').")
-
-    if args.demo:
-        for q in DEMO:
-            _procesar(q, args.model)
-    elif args.pregunta:
-        _procesar(args.pregunta, args.model)
+    if args.backend == "claude-code":
+        if shutil.which("claude") is None:
+            sys.exit("No se encontro el CLI `claude` en el PATH. Instala Claude Code o usa --backend api.")
     else:
+        import os
+
+        key = os.environ.get("ANTHROPIC_API_KEY", "").strip()
+        if not key or key in {"sk-ant-...", "tu-key-aqui", "placeholder"}:
+            sys.exit(
+                "Falta ANTHROPIC_API_KEY en .env.\n"
+                "Consiguela en https://console.anthropic.com/ (Settings -> API keys),\n"
+                "carga credito en Plans & billing, y pega la key (empieza con 'sk-ant-')."
+            )
+
+    if not args.demo and not args.pregunta:
         ap.error("da una pregunta o usa --demo")
+
+    preguntas = DEMO if args.demo else [args.pregunta]
+    for q in preguntas:
+        _procesar(q, args.model, args.backend)
 
 
 if __name__ == "__main__":

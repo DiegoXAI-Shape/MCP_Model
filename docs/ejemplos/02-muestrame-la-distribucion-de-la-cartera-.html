@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cartera por antigüedad de mora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --tinta:#1c1b19;
+    --suave:#6f6a63;
+    --linea:#e7e3dc;
+    --corriente:#2f9e8f;
+    --mora:#e0872b;
+    --fondo:#faf9f7;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:var(--fondo);
+    color:var(--tinta);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:32px;
+  }
+  .panel{
+    width:100%;
+    max-width:940px;
+  }
+  header{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+    border-bottom:1px solid var(--linea);
+    padding-bottom:18px;
+  }
+  h1{
+    font-size:20px;
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+  .corte{
+    font-size:13px;
+    color:var(--suave);
+  }
+  .resumen{
+    display:flex;
+    flex-wrap:wrap;
+    gap:48px;
+    margin:26px 0 34px;
+  }
+  .kpi .label{
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--suave);
+    margin-bottom:6px;
+  }
+  .kpi .cifra{
+    font-size:40px;
+    font-weight:700;
+    letter-spacing:-0.02em;
+  }
+  .kpi .cifra.chico{font-size:28px}
+  table{
+    width:100%;
+    border-collapse:collapse;
+  }
+  th{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.07em;
+    color:var(--suave);
+    font-weight:600;
+    text-align:right;
+    padding:0 0 12px;
+  }
+  th.izq{text-align:left}
+  td{
+    padding:14px 0;
+    border-top:1px solid var(--linea);
+    font-size:14px;
+    text-align:right;
+    vertical-align:middle;
+  }
+  td.bucket{
+    text-align:left;
+    font-weight:600;
+    font-size:15px;
+    white-space:nowrap;
+  }
+  td.barra{width:46%;padding-left:22px;padding-right:22px}
+  td.saldo{font-variant-numeric:tabular-nums;font-weight:600}
+  td.pct{font-variant-numeric:tabular-nums;width:64px}
+  td.ctas{font-variant-numeric:tabular-nums;color:var(--suave);width:96px}
+  .bar-track{
+    width:100%;
+    height:20px;
+    background:#efece6;
+    border-radius:3px;
+    overflow:hidden;
+  }
+  .swatch{
+    display:inline-block;
+    width:9px;height:9px;
+    border-radius:2px;
+    margin-right:8px;
+    vertical-align:baseline;
+  }
+  .leyenda{
+    margin-top:26px;
+    font-size:12px;
+    color:var(--suave);
+    display:flex;
+    gap:22px;
+    flex-wrap:wrap;
+  }
+  .leyenda span{display:inline-flex;align-items:center}
+</style>
+</head>
+<body>
+  <div class="panel">
+    <header>
+      <h1>Distribución de la cartera por antigüedad de mora</h1>
+      <div class="corte">Fecha de corte: 1 de septiembre de 2026</div>
+    </header>
+
+    <div class="resumen">
+      <div class="kpi">
+        <div class="label">Saldo vivo total</div>
+        <div class="cifra">$54,464,288 MXN</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Cartera vencida</div>
+        <div class="cifra chico">$35,763,091 MXN&nbsp;·&nbsp;65.7%</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Mora promedio ponderada</div>
+        <div class="cifra chico">40.2 días</div>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th class="izq">Bucket</th>
+          <th class="izq">Participación del saldo</th>
+          <th>Saldo</th>
+          <th>%</th>
+          <th>Cuentas</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="bucket"><span class="swatch" style="background:var(--corriente)"></span>Al corriente</td>
+          <td class="barra">
+            <div class="bar-track">
+              <svg width="100%" height="20" viewBox="0 0 100 20" preserveAspectRatio="none">
+                <rect x="0" y="0" width="34.3" height="20" fill="var(--corriente)"/>
+              </svg>
+            </div>
+          </td>
+          <td class="saldo">$18,701,197 MXN</td>
+          <td class="pct">34.3%</td>
+          <td class="ctas">143</td>
+        </tr>
+        <tr>
+          <td class="bucket"><span class="swatch" style="background:var(--mora)"></span>1 – 30 días</td>
+          <td class="barra">
+            <div class="bar-track">
+              <svg width="100%" height="20" viewBox="0 0 100 20" preserveAspectRatio="none">
+                <rect x="0" y="0" width="25.9" height="20" fill="var(--mora)"/>
+              </svg>
+            </div>
+          </td>
+          <td class="saldo">$14,103,703 MXN</td>
+          <td class="pct">25.9%</td>
+          <td class="ctas">82</td>
+        </tr>
+        <tr>
+          <td class="bucket"><span class="swatch" style="background:var(--mora)"></span>31 – 60 días</td>
+          <td class="barra">
+            <div class="bar-track">
+              <svg width="100%" height="20" viewBox="0 0 100 20" preserveAspectRatio="none">
+                <rect x="0" y="0" width="22.9" height="20" fill="var(--mora)"/>
+              </svg>
+            </div>
+          </td>
+          <td class="saldo">$12,493,278 MXN</td>
+          <td class="pct">22.9%</td>
+          <td class="ctas">67</td>
+        </tr>
+        <tr>
+          <td class="bucket"><span class="swatch" style="background:var(--mora)"></span>61 – 90 días</td>
+          <td class="barra">
+            <div class="bar-track">
+              <svg width="100%" height="20" viewBox="0 0 100 20" preserveAspectRatio="none">
+                <rect x="0" y="0" width="7.5" height="20" fill="var(--mora)"/>
+              </svg>
+            </div>
+          </td>
+          <td class="saldo">$4,100,461 MXN</td>
+          <td class="pct">7.5%</td>
+          <td class="ctas">30</td>
+        </tr>
+        <tr>
+          <td class="bucket"><span class="swatch" style="background:var(--mora)"></span>90+ días</td>
+          <td class="barra">
+            <div class="bar-track">
+              <svg width="100%" height="20" viewBox="0 0 100 20" preserveAspectRatio="none">
+                <rect x="0" y="0" width="9.3" height="20" fill="var(--mora)"/>
+              </svg>
+            </div>
+          </td>
+          <td class="saldo">$5,065,649 MXN</td>
+          <td class="pct">9.3%</td>
+          <td class="ctas">37</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="leyenda">
+      <span><span class="swatch" style="background:var(--corriente)"></span>Al corriente</span>
+      <span><span class="swatch" style="background:var(--mora)"></span>En mora (1 a 90+ días)</span>
+      <span>359 cuentas · barras proporcionales al % del saldo total</span>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resumen ejecutivo · Cartera de cobranza</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --tinta:#1b2430;
+    --suave:#6b7683;
+    --linea:#e6e8ec;
+    --acento:#2f6f4f;
+    --alerta:#b4472e;
+    --fondo:#f7f8f6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:var(--fondo);
+    color:var(--tinta);
+    padding:28px 34px;
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  header{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--linea);padding-bottom:12px}
+  header h1{font-size:19px;font-weight:600;letter-spacing:.01em}
+  header .corte{font-size:12.5px;color:var(--suave)}
+  header .corte b{color:var(--tinta);font-weight:600}
+
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .kpi{background:#fff;border:1px solid var(--linea);border-radius:12px;padding:16px 18px}
+  .kpi .lbl{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--suave);margin-bottom:8px}
+  .kpi .val{font-size:29px;font-weight:700;line-height:1;letter-spacing:-.02em}
+  .kpi .sub{font-size:12px;color:var(--suave);margin-top:7px}
+  .kpi .val.alerta{color:var(--alerta)}
+  .kpi .val.acento{color:var(--acento)}
+
+  .grid{display:grid;grid-template-columns:1.15fr 1fr 1.15fr;gap:14px;flex:1;min-height:0}
+  .card{background:#fff;border:1px solid var(--linea);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column}
+  .card h2{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--suave);font-weight:600;margin-bottom:14px}
+
+  /* Aging */
+  .aging{display:flex;flex-direction:column;gap:11px;flex:1;justify-content:center}
+  .row{display:grid;grid-template-columns:78px 1fr auto;align-items:center;gap:10px;font-size:12.5px}
+  .row .bar{height:14px;background:var(--fondo);border-radius:7px;overflow:hidden}
+  .row .bar span{display:block;height:100%;border-radius:7px;background:var(--acento)}
+  .row.venc .bar span{background:var(--alerta)}
+  .row .cifra{font-weight:600;font-size:12px;white-space:nowrap}
+  .row .pct{color:var(--suave);font-size:11px;margin-left:4px}
+
+  /* Cashflow */
+  .cash{flex:1;display:flex;flex-direction:column}
+  .cash svg{width:100%;flex:1}
+  .cash .total{font-size:12px;color:var(--suave);margin-top:8px}
+  .cash .total b{color:var(--tinta);font-weight:600}
+
+  /* Gestores */
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  th{text-align:left;font-weight:600;color:var(--suave);font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;padding-bottom:8px;border-bottom:1px solid var(--linea)}
+  td{padding:7px 0;border-bottom:1px solid var(--linea)}
+  tr:last-child td{border-bottom:none}
+  td.num{text-align:right;font-variant-numeric:tabular-nums}
+  .mini{display:inline-block;width:52px;height:7px;background:var(--fondo);border-radius:4px;overflow:hidden;vertical-align:middle;margin-right:6px}
+  .mini span{display:block;height:100%;background:var(--acento)}
+
+  footer{font-size:11px;color:var(--suave);text-align:right}
+</style>
+</head>
+<body>
+  <header>
+    <h1>Resumen ejecutivo · Cartera de cobranza</h1>
+    <div class="corte">Fecha de corte: <b>1 de septiembre de 2026</b></div>
+  </header>
+
+  <section class="kpis">
+    <div class="kpi">
+      <div class="lbl">Saldo vivo total</div>
+      <div class="val">$54,464,288 MXN</div>
+      <div class="sub">377 cuentas activas · 41 liquidadas</div>
+    </div>
+    <div class="kpi">
+      <div class="lbl">Cartera vencida</div>
+      <div class="val alerta">65.7%</div>
+      <div class="sub">$35,763,091 MXN · 193 cuentas en mora</div>
+    </div>
+    <div class="kpi">
+      <div class="lbl">Mora promedio ponderada</div>
+      <div class="val">40.2 <span style="font-size:15px;font-weight:500">días</span></div>
+      <div class="sub">$3,019,251 MXN ya castigados (23 ctas.)</div>
+    </div>
+    <div class="kpi">
+      <div class="lbl">Recuperado últimos 30 días</div>
+      <div class="val acento">$6,984,492 MXN</div>
+      <div class="sub">Recovery rate 16.3% · promesas cumplidas 61.4%</div>
+    </div>
+  </section>
+
+  <section class="grid">
+    <div class="card">
+      <h2>Distribución por antigüedad de mora</h2>
+      <div class="aging">
+        <div class="row">
+          <span>Al corriente</span>
+          <div class="bar"><span style="width:52.2%"></span></div>
+          <span class="cifra">$18,701,197<span class="pct">34.3%</span></span>
+        </div>
+        <div class="row venc">
+          <span>1 – 30 días</span>
+          <div class="bar"><span style="width:39.4%"></span></div>
+          <span class="cifra">$14,103,703<span class="pct">25.9%</span></span>
+        </div>
+        <div class="row venc">
+          <span>31 – 60 días</span>
+          <div class="bar"><span style="width:34.9%"></span></div>
+          <span class="cifra">$12,493,278<span class="pct">22.9%</span></span>
+        </div>
+        <div class="row venc">
+          <span>61 – 90 días</span>
+          <div class="bar"><span style="width:11.4%"></span></div>
+          <span class="cifra">$4,100,461<span class="pct">7.5%</span></span>
+        </div>
+        <div class="row venc">
+          <span>90+ días</span>
+          <div class="bar"><span style="width:14.1%"></span></div>
+          <span class="cifra">$5,065,649<span class="pct">9.3%</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card cash">
+      <h2>Cobranza mensual</h2>
+      <svg viewBox="0 0 300 170" preserveAspectRatio="none">
+        <line x1="0" y1="150" x2="300" y2="150" stroke="#e6e8ec" stroke-width="1"/>
+        <!-- max ref 7,243,988 -> escala 130px -->
+        <g fill="#2f6f4f">
+          <rect x="10"  y="139.2" width="30" height="10.8"/>
+          <rect x="58"  y="138.8" width="30" height="11.2"/>
+          <rect x="106" y="130.7" width="30" height="19.3"/>
+          <rect x="154" y="89.9"  width="30" height="60.1"/>
+          <rect x="202" y="20"    width="30" height="130"/>
+          <rect x="250" y="23.6"  width="30" height="126.4"/>
+        </g>
+        <g fill="#6b7683" font-size="9" font-family="Inter,sans-serif" text-anchor="middle">
+          <text x="25"  y="163">Mar</text>
+          <text x="73"  y="163">Abr</text>
+          <text x="121" y="163">May</text>
+          <text x="169" y="163">Jun</text>
+          <text x="217" y="163">Jul</text>
+          <text x="265" y="163">Ago</text>
+        </g>
+        <g fill="#1b2430" font-size="8.5" font-family="Inter,sans-serif" text-anchor="middle" font-weight="600">
+          <text x="217" y="15">$7.24M</text>
+          <text x="265" y="18">$7.04M</text>
+        </g>
+      </svg>
+      <div class="total">Total mar–ago 2026: <b>$19,943,047 MXN</b> · repunte desde junio (sept. en curso: $151,541)</div>
+    </div>
+
+    <div class="card">
+      <h2>Desempeño por gestor · últimos 90 días</h2>
+      <table>
+        <thead>
+          <tr><th>Gestor</th><th class="num">Recuperado</th><th class="num">Prom. cumpl.</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Araceli Villanueva</td>
+            <td class="num"><span class="mini"><span style="width:100%"></span></span>$3,563,696</td>
+            <td class="num">57.1%</td>
+          </tr>
+          <tr>
+            <td>Alberto Hernán Guevara</td>
+            <td class="num"><span class="mini"><span style="width:95%"></span></span>$3,388,010</td>
+            <td class="num">47.2%</td>
+          </tr>
+          <tr>
+            <td>Sra. Noemí Farías</td>
+            <td class="num"><span class="mini"><span style="width:94%"></span></span>$3,359,145</td>
+            <td class="num">68.8%</td>
+          </tr>
+          <tr>
+            <td>Gabriel Santiago</td>
+            <td class="num"><span class="mini"><span style="width:81%"></span></span>$2,889,693</td>
+            <td class="num">73.5%</td>
+          </tr>
+          <tr>
+            <td>Darío Canales</td>
+            <td class="num"><span class="mini"><span style="width:62%"></span></span>$2,199,809</td>
+            <td class="num">45.3%</td>
+          </tr>
+          <tr>
+            <td>Alma Alicia Cabán</td>
+            <td class="num"><span class="mini"><span style="width:61%"></span></span>$2,179,185</td>
+            <td class="num">71.4%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>Cartera sintética · montos en pesos mexicanos (MXN) · datos al 2026-09-01</footer>
+</body>
+</html>
