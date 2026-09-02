@@ -1,135 +1,149 @@
-# Panel de Cartera Generativo
+# MCP Cobranza (Sandbox)
 
-Servidor **MCP** sobre una cartera de cobranza sintética, con un **host que
-genera interfaces mínimas bajo demanda**: se le pregunta en lenguaje natural
-por el estado de la cartera y devuelve una página HTML autónoma —KPIs, gráficas
-SVG, tablas— construida al momento con los datos reales de la consulta.
+Entorno de pruebas (*sandbox*) y prueba de concepto para la consulta y análisis de una cartera de cobranza mediante el protocolo **Model Context Protocol (MCP)**.
 
-Proyecto pensado para el dominio de **cobranza / cuentas por cobrar**: aging de
-cartera, recovery rate, promesas de pago, desempeño por gestor.
+Actualmente el proyecto funciona a través de **interfaz de línea de comandos (CLI)** e interactúa con **Claude** (ya sea mediante el CLI de Claude Code o la API directa) para consultar métricas financieras y generar vistas HTML bajo demanda.
 
 ```
-┌────────────────────┐   ┌──────────────────────┐   ┌───────────────────────────┐
-│ Datos sintéticos   │   │ Servidor MCP         │   │ Host de interfaces        │
-│ (SQLite)           │──▶│ server.py            │──▶│ host.py                   │
-│ seed.py            │   │ 7 tools tipadas      │   │ Claude (vía MCP) → HTML   │
-│ deudores, cuentas, │   │ sobre tools_core.py  │   │ out/<n>.html + galería    │
-│ pagos, promesas    │   │                      │   │                           │
-└────────────────────┘   └──────────┬───────────┘   └───────────────────────────┘
-                                    │
-                         MCP Inspector / Claude Desktop
-                         (mismo servidor, cliente interactivo)
+┌─────────────────────────┐     ┌────────────────────────┐     ┌─────────────────────────────┐
+│ Base de Datos SQLite    │     │ Servidor MCP           │     │ Host / Orquestador          │
+│ (cobranza.db)           │────▶│ (server.py)            │────▶│ (host.py)                   │
+│ Datos sintéticos        │     │ 7 herramientas tipadas │     │ Claude (CLI / API)          │
+│ seed.py                 │     │ sobre tools_core.py    │     │ Generación de HTML (out/)   │
+└─────────────────────────┘     └───────────┬────────────┘     └─────────────────────────────┘
+                                            │
+                                 Clientes MCP compatibles
+                                 (Claude Desktop / Inspector)
 ```
 
-`tools_core.py` es la **única fuente de verdad**: tanto el servidor MCP como el
-host la reutilizan; las pruebas la cubren directamente.
+---
 
-## Puesta en marcha
+## Alcance y Estado Actual (Sandbox)
 
+* **Entorno controlado:** Utiliza datos sintéticos generados con `Faker (es_MX)` que simulan deudores, gestores, cuentas con distintos niveles de morosidad, pagos y promesas de pago.
+* **Operación por CLI:** La interacción actual se realiza desde terminal (`host.py`, `server.py`, `scripts/probe_mcp.py`).
+* **Herramientas de solo lectura:** Las consultas permiten inspeccionar y calcular métricas sin modificar el estado de la base de datos.
+* **Generación bajo demanda:** Claude interpreta preguntas en lenguaje natural, consulta el servidor MCP y genera reportes en HTML/SVG independientes guardados localmente en `out/`.
+
+### Escalabilidad Futura
+
+La arquitectura separa estrictamente la lógica de datos (`tools_core.py`) del transporte MCP (`server.py`) y del host (`host.py`), lo que permite escalar el proyecto hacia:
+1. **Interfaz Gráfica Completa (GUI / Web App):** Integración con frameworks como FastAPI/Node.js en el backend y React/Vue para un panel interactivo en tiempo real con chat y visualizaciones dinámicas.
+2. **Conexión a Bases de Datos Reales:** Sustitución de SQLite por motores relacionales empresariales (PostgreSQL, SQL Server, Oracle) con carteras de producción.
+3. **Modelos Predictivos:** Incorporación de modelos de Machine Learning (ej. scoring de probabilidad de pago a 30 días, propensión de contacto).
+4. **Herramientas de Escritura:** Registro de nuevas promesas de pago, reasignación de cuentas a gestores y conciliación de pagos.
+
+---
+
+## Herramientas MCP Disponibles
+
+El servidor expone 7 herramientas analíticas:
+
+| Herramienta | Parámetros | Descripción |
+| :--- | :--- | :--- |
+| `portfolio_summary` | Ninguno | Resumen general: saldo vivo, saldo vencido, % cartera vencida, mora ponderada, monto recuperado en 30 días y tasa de promesas cumplidas. |
+| `aging` | Ninguno | Distribución de la cartera en buckets de morosidad (`al_corriente`, `1-30`, `31-60`, `61-90`, `90+`). |
+| `list_accounts` | `bucket`, `gestor_id`, `estatus`, `orden`, `limite` | Consulta de cuentas con datos del deudor y gestor, con filtros y ordenamiento. |
+| `get_account` | `cuenta_id` | Detalle 360° de una cuenta: crédito, deudor, score buró e historial de pagos y promesas. |
+| `get_debtor` | `deudor_id` | Perfil consolidado del deudor con todas sus cuentas y saldo total vs en mora. |
+| `cashflow` | `desde`, `hasta`, `granularidad` | Flujo de cobranza agrupado por día, semana o mes en un rango de fechas. |
+| `collector_stats` | `desde`, `hasta` | Desempeño por gestor: saldo gestionado, monto recuperado y % de promesas cumplidas. |
+
+---
+
+## Métricas y Fórmulas del Dominio
+
+* **% Cartera Vencida:**
+  $$\text{Pct Vencida} = \frac{\text{Saldo en mora}}{\text{Saldo vivo total}} \times 100$$
+* **Días de Mora Promedio Ponderados por Saldo:**
+  $$\text{Mora Ponderada} = \frac{\sum (\text{Saldo}_i \times \text{Días Mora}_i)}{\sum \text{Saldo}_i}$$
+* **Recovery Rate (30 días):**
+  $$\text{Recovery Rate} = \frac{\text{Recuperado (últimos 30d)}}{\text{Saldo Vencido} + \text{Recuperado (últimos 30d)}} \times 100$$
+* **Efectividad de Promesas:**
+  $$\text{Cumplimiento} = \frac{\text{Promesas Cumplidas}}{\text{Promesas Totales}} \times 100$$
+
+> **Fecha de corte:** Fijada en `2026-09-01` en `seed.py` y `tools_core.py` para garantizar reproducibilidad en las consultas y pruebas.
+
+---
+
+## Instalación y Uso
+
+### 1. Requisitos Previos
+* Python 3.10 o superior.
+* Entorno virtual recomendado.
+
+### 2. Configuración del Entorno
 ```bash
+# Crear y activar entorno virtual
 python -m venv venv
-venv\Scripts\pip install -e ".[dev]"     # Windows  (Linux/Mac: venv/bin/pip)
-python seed.py                            # crea cobranza.db (reproducible, semilla fija)
-pytest -q                                 # 10 pruebas
+venv\Scripts\activate       # En Windows
+# source venv/bin/activate  # En Linux/macOS
+
+# Instalar dependencias en modo editable
+pip install -e ".[dev]"
+
+# Generar la base de datos sintética
+python seed.py
 ```
 
-### Servidor MCP
-
+### 3. Ejecución de Pruebas
 ```bash
-python server.py            # modo stdio
-mcp dev server.py           # abre el MCP Inspector (requiere Node)
-python scripts/probe_mcp.py # cliente stdio mínimo: lista y llama las tools
+pytest
 ```
 
-### Host de interfaces
+---
 
-Dos motores (`--backend`):
+## Modos de Ejecución (CLI)
+
+### A. Probar el Servidor MCP Directamente
+```bash
+# Modo estándar (stdio)
+python server.py
+
+# Cliente de prueba (smoke test de las 7 herramientas)
+python scripts/probe_mcp.py
+
+# Usando MCP Inspector (requiere Node.js)
+mcp dev server.py
+```
+
+### B. Generar Interfaces con el Host
+El host soporta dos backends:
 
 ```bash
-# claude-code (por defecto): usa el CLI `claude` como cliente MCP.
-# No necesita API key; corre con la sesión de Claude Code ya autenticada.
+# 1. Backend claude-code (por defecto):
+# Utiliza la sesión activa del CLI de Claude (no requiere API key manual).
 python host.py "Dame un resumen ejecutivo de la cartera"
-python host.py --demo                       # genera 4 interfaces de ejemplo
 
-# api: llama directo a la Messages API. Necesita ANTHROPIC_API_KEY en .env
-python host.py --backend api "¿Qué gestor recupera más?"
+# Generar lote de 4 interfaces de prueba
+python host.py --demo
+
+# 2. Backend API directa (requiere ANTHROPIC_API_KEY en archivo .env):
+python host.py --backend api "¿Cuáles son los 3 gestores con mayor recuperación?"
 ```
 
-Cada interfaz se guarda en `out/`, y `out/index.html` es una galería de todo lo
-generado. En `docs/ejemplos/` están las 4 interfaces del `--demo` ya generadas
-(ábrelas en el navegador sin tener que correr nada).
+Los archivos generados se guardan en la carpeta `out/` junto con un índice interactivo en `out/index.html`. 
 
-## Herramientas MCP
+*(En `docs/ejemplos/` se incluyen 4 dashboards pre-generados listos para visualizar en el navegador sin ejecutar llamadas).*
 
-| Tool | Parámetros | Devuelve |
-|---|---|---|
-| `portfolio_summary` | — | Saldo vivo y vencido, % de cartera vencida, mora promedio ponderada, recuperado 30 d, % de promesas cumplidas |
-| `aging` | — | Cartera viva por bucket (`al_corriente`, `1-30`, `31-60`, `61-90`, `90+`): saldo, cuentas, % del total |
-| `list_accounts` | `bucket?`, `gestor_id?`, `estatus?`, `orden`, `limite` | Cuentas con datos del deudor y del gestor |
-| `get_account` | `cuenta_id` | Detalle de una cuenta + historial de pagos y promesas |
-| `get_debtor` | `deudor_id` | Perfil del deudor con todas sus cuentas y su saldo en mora |
-| `cashflow` | `desde?`, `hasta?`, `granularidad` | Monto cobrado por periodo (día / semana / mes) |
-| `collector_stats` | `desde?`, `hasta?` | Ranking de gestores: saldo gestionado, recuperado, % de promesas |
+---
 
-Los errores de entrada (cuenta inexistente, bucket inválido, rango de fechas al
-revés) se devuelven como `{"error": "..."}`, no como excepción de transporte.
+## Estructura del Repositorio
 
-## Cálculos de cobranza
-
-- **Bucket de aging**: clasificación de la cuenta por `días_de_mora`.
-- **% de cartera vencida** (por saldo): `saldo_en_mora / saldo_vivo`.
-- **Días de mora promedio ponderados por saldo**:
-
-  ```
-  Σ (saldo_i · días_mora_i) / Σ saldo_i
-  ```
-
-- **Recovery rate 30 d**: `recuperado_últimos_30d / (saldo_vencido + recuperado_últimos_30d)`.
-- **% de promesas cumplidas**: `promesas_cumplidas / promesas_totales`.
-
-La fecha de corte de los datos está fija en **2026-09-01** (`HOY` en `seed.py`
-y `tools_core.py`) para que todo sea reproducible.
-
-## Capturas
-
-| | |
-|---|---|
-| MCP Inspector: lista de tools | `docs/img/inspector-tools.png` |
-| MCP Inspector: llamada con resultado | `docs/img/inspector-call.png` |
-| Interfaz generada: resumen ejecutivo | `docs/img/ui-resumen.png` |
-| Interfaz generada: aging | `docs/img/ui-aging.png` |
-| Galería `out/index.html` | `docs/img/galeria.png` |
-
-## Decisiones técnicas
-
-- **`tools_core` separado del servidor MCP.** El protocolo (esquemas, transporte)
-  y la lógica de negocio viven aparte. El host reusa la lógica sin volver a
-  pasar por el transporte MCP; las pruebas atacan funciones puras.
-- **Backend `claude-code` por defecto.** Demuestra el servidor MCP con un
-  cliente real y no exige que quien clone el repo tenga saldo de API.
-- **Datos sintéticos con semilla fija.** La base se regenera igual en cualquier
-  máquina y en CI, así las pruebas pueden afirmar valores exactos.
-- **El modelo solo ve herramientas de solo lectura.** No hay forma de que una
-  interfaz generada modifique la cartera.
-
-## Con más tiempo
-
-- `score_account`: probabilidad de pago a 30 días con regresión logística
-  (features: días de mora, promesas rotas, pagos parciales recientes).
-- Harness de evals de *tool-choice*: N preguntas con las tools esperadas,
-  para medir si el modelo elige bien.
-- Host web (FastAPI) con chat + `<iframe>` en vivo, en vez de archivos en `out/`.
-- Empaquetar el servidor para `claude mcp add` / `claude_desktop_config.json`.
-
-## Estructura
-
-```
-seed.py            generador de la cartera sintética (SQLite)
-tools_core.py      lógica de negocio — 7 funciones puras
-server.py          servidor MCP (envuelve tools_core)
-host.py            genera interfaces (backend claude-code | api)
-scripts/probe_mcp.py   cliente MCP de prueba
-tests/test_tools.py    10 pruebas sobre una cartera de 5 cuentas
-mcp.config.json    config del servidor MCP para el CLI `claude`
-out/               interfaces generadas + galería (no versionado)
+```text
+├── .github/workflows/ci.yml   # Pipeline de CI (seed + pytest)
+├── docs/
+│   ├── CAPTURAS.md            # Guía de capturas de pantalla
+│   └── ejemplos/              # Dashboards HTML de demostración
+├── scripts/
+│   └── probe_mcp.py           # Cliente de prueba MCP vía stdio
+├── tests/
+│   └── test_tools.py          # Pruebas unitarias de lógica y métricas
+├── conftest.py                # Configuración de rutas de prueba
+├── host.py                    # Orquestador y generador de interfaces HTML
+├── mcp.config.json            # Configuración para clientes MCP
+├── pyproject.toml             # Metadatos del proyecto y dependencias
+├── seed.py                    # Generador de datos sintéticos (SQLite)
+├── server.py                  # Servidor MCP con transporte stdio
+└── tools_core.py              # Lógica de negocio y consultas SQL puras
 ```
