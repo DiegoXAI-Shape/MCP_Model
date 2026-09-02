@@ -1,0 +1,13 @@
+# Entorno y secretos
+.env
+venv/
+.venv/
+
+# Datos generados
+*.db
+out/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
