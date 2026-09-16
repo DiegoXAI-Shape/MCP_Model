@@ -15,3 +15,14 @@ __pycache__/
 build/
 dist/
 
+# Frontend (Astro)
+node_modules/
+src/frontend/node_modules/
+src/frontend/dist/
+src/frontend/.astro/
+
+# IDE y agentes
+.claude/
+.vscode/
+.idea/
+

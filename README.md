@@ -128,6 +128,39 @@ Los archivos generados se guardan en la carpeta `out/` junto con un índice inte
 
 ---
 
+## Panel Web (chat interactivo)
+
+Ademas del flujo por CLI, hay un panel web que genera las interfaces en vivo desde
+un chat: barra lateral con el chat (razonamiento, tool calls y tokens en tiempo
+real) y un panel principal donde se inyecta el HTML generado dentro de un
+`<iframe>` aislado. Son dos procesos separados: la API (Python/FastAPI) y el
+frontend (Astro).
+
+Soporta dos proveedores de modelo, elegibles desde el propio panel:
+
+* **Claude (API, extended thinking):** habla directo con la Messages API de
+  Anthropic con "extended thinking" activado, transmitiendo el razonamiento
+  real del modelo token a token. Requiere `ANTHROPIC_API_KEY` en `.env`.
+* **Qwen local (llama.cpp):** habla con un `llama-server` ya corriendo en tu
+  máquina via su endpoint compatible con OpenAI. Requiere que el servidor
+  soporte tool calling y `--reasoning-format deepseek` (asi separa el
+  razonamiento del contenido). Configurable con `LLAMACPP_BASE_URL` /
+  `LLAMACPP_MODEL` en `.env` (ver `.env.example`).
+
+```bash
+# 1. Backend (API + streaming SSE) -- puerto 8787
+uvicorn src.backend.web:app --reload --port 8787
+
+# 2. Frontend (Astro) -- puerto 4321, con proxy de /api hacia el backend
+cd frontend
+npm install
+npm run dev
+```
+
+Abre `http://localhost:4321`.
+
+---
+
 ## Estructura del Repositorio
 
 ```text
