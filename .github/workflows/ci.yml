@@ -2,19 +2,50 @@ name: CI
 
 on:
   push:
+    branches: [ main, master ]
   pull_request:
+    branches: [ main, master ]
 
 jobs:
-  test:
+  backend:
+    name: Backend Tests & MCP Probe
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Instalar dependencias
+          cache: "pip"
+
+      - name: Instalar dependencias backend
         run: pip install -e ".[dev]"
-      - name: Generar cartera sintetica
-        run: python seed.py
-      - name: Pruebas
-        run: pytest -q
+
+      - name: Generar cartera sintética (seed)
+        run: python src/backend/seed.py
+
+      - name: Ejecutar pruebas unitarias (pytest)
+        run: pytest -v
+
+      - name: Smoke test del servidor MCP (probe_mcp)
+        run: python scripts/probe_mcp.py
+
+  frontend:
+    name: Frontend Build (Astro)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: src/frontend/package-lock.json
+
+      - name: Instalar dependencias frontend
+        run: npm --prefix src/frontend ci
+
+      - name: Compilar frontend (Astro build)
+        run: npm --prefix src/frontend run build
