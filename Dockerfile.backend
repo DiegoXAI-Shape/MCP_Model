@@ -1,0 +1,19 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Evita archivos .pyc y fuerza salida sin buffer para logs en vivo
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Instala dependencias del backend
+COPY pyproject.toml .
+RUN pip install --no-cache-dir -e .
+
+# Copia código fuente y base de datos
+COPY src/ ./src/
+COPY cobranza.db ./cobranza.db
+
+EXPOSE 8787
+
+CMD ["uvicorn", "src.backend.web:app", "--host", "0.0.0.0", "--port", "8787"]

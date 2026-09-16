@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.db-journal
+.pytest_cache/
+.venv/
+venv/
+.env
+.git/
+.github/
+out/
+dist/
+node_modules/
+.astro/
+walkthrough.md

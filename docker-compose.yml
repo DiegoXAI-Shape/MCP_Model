@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: cobranza-backend
+    ports:
+      - "8787:8787"
+    environment:
+      - LLAMACPP_BASE_URL=http://host.docker.internal:11434
+      - LLAMACPP_MODEL=qwen3.5:16k
+    volumes:
+      # Mantiene la persistencia de las promesas de pago registradas
+      - ./cobranza.db:/app/cobranza.db
+    extra_hosts:
+      # Permite conectar al Ollama corriendo con GPU en tu máquina host
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./src/frontend
+      dockerfile: Dockerfile
+    container_name: cobranza-frontend
+    ports:
+      - "4321:4321"
+    depends_on:
+      - backend
+    restart: unless-stopped
