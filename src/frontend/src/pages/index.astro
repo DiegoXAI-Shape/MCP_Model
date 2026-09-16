@@ -1,0 +1,51 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Panel de Cartera Generativo">
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h1>Panel de Cartera</h1>
+        <p class="subtitle">Genera interfaces sobre la cartera de cobranza a partir de una pregunta.</p>
+        <div class="provider-row">
+          <label for="provider">Modelo</label>
+          <select id="provider">
+            <option value="qwen-local">Qwen local (Ollama - 16k contexto)</option>
+            <option value="claude">Claude (API, extended thinking)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="chat-log" id="chat-log"></div>
+
+      <form class="composer" id="composer">
+        <textarea
+          id="prompt-input"
+          rows="2"
+          placeholder="Ej. Dame un resumen ejecutivo de la cartera"
+          required
+        ></textarea>
+        <button type="submit" id="send-btn">Enviar</button>
+      </form>
+    </aside>
+
+    <main class="main" id="main-panel">
+      <p class="empty-state" id="empty-state">Escribe una pregunta para generar una interfaz.</p>
+
+      <div class="skeleton" id="skeleton" hidden>
+        <div class="bar" style="height:2rem;width:38%"></div>
+        <div class="bar" style="height:9rem;"></div>
+        <div class="bar" style="height:1.1rem;width:72%"></div>
+        <div class="bar" style="height:1.1rem;width:55%"></div>
+        <div class="bar" style="height:1.1rem;width:64%"></div>
+      </div>
+
+      <iframe class="preview-frame" id="preview" title="Interfaz generada" sandbox="allow-scripts" hidden></iframe>
+    </main>
+  </div>
+
+  <script>
+    import "../scripts/chat.js";
+  </script>
+</Layout>

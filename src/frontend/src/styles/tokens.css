@@ -1,0 +1,35 @@
+/* tokens.css -- Paleta y tipografia. Minimalista: 2-3 colores, mucho blanco. */
+
+:root {
+  color-scheme: light;
+
+  --bg: #fafafa;
+  --surface: #ffffff;
+  --border: #e6e6e6;
+  --text: #18181a;
+  --text-dim: #71717a;
+  --accent: #1552d6;
+  --accent-soft: #edf1fd;
+  --error: #b3261e;
+  --error-soft: #fbeceb;
+
+  --radius: 10px;
+  --font-ui: -apple-system, "Segoe UI", system-ui, sans-serif;
+  --font-mono: Consolas, "SF Mono", "Cascadia Code", ui-monospace, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    --bg: #121214;
+    --surface: #19191c;
+    --border: #2b2b2f;
+    --text: #ededef;
+    --text-dim: #9a9aa2;
+    --accent: #7c9bff;
+    --accent-soft: #1c2440;
+    --error: #ff8b83;
+    --error-soft: #3a1f1d;
+  }
+}

@@ -1,0 +1,201 @@
+/* chat.css -- El chat de la barra lateral. Tipografia monoespaciada
+   (Consolas) para todo lo relacionado con la IA, legible y sin adornos. */
+
+.chat-log {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 1rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.msg {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.msg-role {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+}
+
+.msg-user .msg-body {
+  padding: 0.6rem 0.7rem;
+  border-radius: var(--radius);
+  background: var(--accent-soft);
+  color: var(--text);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.msg-assistant {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.7rem 0.8rem;
+  background: var(--bg);
+}
+
+.reasoning summary {
+  cursor: pointer;
+  color: var(--text-dim);
+  font-size: 0.76rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  user-select: none;
+}
+
+.reasoning summary::marker {
+  color: var(--text-dim);
+}
+
+.reasoning-ms {
+  color: var(--text-dim);
+  font-size: 0.72rem;
+}
+
+.reasoning-text {
+  margin: 0.5rem 0 0;
+  padding: 0.55rem 0.65rem;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--text-dim);
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.reasoning-text:empty::before {
+  content: "...";
+}
+
+.tool-calls {
+  margin-top: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.tool-chip {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.4rem 0.55rem;
+  background: var(--surface);
+}
+
+.tool-chip-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.tool-chip .tool-name {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.tool-chip .tool-args {
+  color: var(--text-dim);
+  word-break: break-all;
+}
+
+.tool-chip .tool-status {
+  margin-left: auto;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.tool-chip.pending .tool-status::after {
+  content: "...";
+}
+
+.tool-chip.error {
+  border-color: var(--error);
+  background: var(--error-soft);
+}
+
+.tool-chip.error .tool-status {
+  color: var(--error);
+}
+
+.tool-chip pre {
+  margin: 0.4rem 0 0;
+  font-size: 0.74rem;
+  color: var(--text-dim);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 140px;
+  overflow-y: auto;
+}
+
+.msg-summary {
+  margin-top: 0.6rem;
+  font-size: 0.74rem;
+  color: var(--text-dim);
+}
+
+.msg-error {
+  border: 1px solid var(--error);
+  background: var(--error-soft);
+  color: var(--error);
+  border-radius: var(--radius);
+  padding: 0.6rem 0.7rem;
+}
+
+.composer {
+  flex: none;
+  border-top: 1px solid var(--border);
+  padding: 0.8rem 0.9rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+  background: var(--surface);
+}
+
+.composer textarea {
+  flex: 1;
+  min-width: 0;
+  resize: none;
+  padding: 0.55rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.composer textarea:focus,
+.provider-row select:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.composer button {
+  flex: none;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.composer button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

@@ -1,0 +1,50 @@
+/* reset.css -- Base minima, sin frameworks. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+button,
+textarea,
+select,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* El atributo `hidden` debe ganar siempre. Sin este !important, reglas de
+   autor con `display` (p.ej. .skeleton{display:flex}) le ganan al UA
+   stylesheet por origen aunque tengan la misma especificidad, y el
+   elemento "oculto" se sigue pintando encima de lo demas. */
+[hidden] {
+  display: none !important;
+}
