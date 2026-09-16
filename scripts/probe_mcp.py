@@ -23,7 +23,7 @@ RAIZ = Path(__file__).resolve().parent.parent
 async def main() -> None:
     params = StdioServerParameters(
         command=sys.executable,
-        args=[str(RAIZ / "server.py")],
+        args=[str(RAIZ / "src" / "backend" / "server.py")],
         cwd=str(RAIZ),
     )
     async with stdio_client(params) as (read, write):
@@ -43,6 +43,7 @@ async def main() -> None:
                 ("list_accounts", {"bucket": "90+", "limite": 2}),
                 ("collector_stats", {}),
                 ("get_account", {"cuenta_id": 999999}),  # error controlado
+                ("register_payment_promise", {"cuenta_id": 1, "monto_prometido": 2500.0, "dias_plazo": 3}),
             ]
             for nombre, args in demos:
                 res = await session.call_tool(nombre, args)

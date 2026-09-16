@@ -11,6 +11,7 @@ import sqlite3
 
 import pytest
 
+import tools
 import tools_core
 from seed import SCHEMA
 
@@ -70,6 +71,8 @@ def db(tmp_path, monkeypatch):
     con.close()
 
     monkeypatch.setattr(tools_core, "DB_PATH", path)
+    monkeypatch.setattr(tools.database, "DB_PATH", path)
+    monkeypatch.setattr(tools, "DB_PATH", path)
     return path
 
 
@@ -162,3 +165,32 @@ def test_collector_stats_ranking(db):
     assert top["recuperado_periodo"] == 8000
     ana = next(g for g in r["gestores"] if g["gestor"] == "Ana")
     assert ana["recuperado_periodo"] == 0
+
+
+def test_modular_package_consistency(db):
+    assert len(tools.TOOLS) == 9
+    assert tools.portfolio_summary() == tools_core.portfolio_summary()
+    assert tools.aging() == tools_core.aging()
+    assert tools.list_accounts(limite=2) == tools_core.list_accounts(limite=2)
+
+
+def test_register_and_list_payment_promises(db):
+    r1 = tools.register_payment_promise(cuenta_id=1, monto_prometido=5000.0, fecha_promesa="2026-09-10")
+    assert r1["cuenta_id"] == 1
+    assert r1["fecha_promesa"] == "2026-09-10"
+    assert r1["monto_prometido"] == 5000.0
+    assert r1["cumplida"] is False
+
+    r2 = tools.register_payment_promise(cuenta_id=1, monto_prometido=2000.0, dias_plazo=5)
+    assert r2["fecha_promesa"] == (HOY + dt.timedelta(days=5)).isoformat()
+
+    # Probar que list_payment_promises encuentra las promesas recién registradas
+    lista = tools.list_payment_promises(cuenta_id=1)
+    assert lista["total_encontradas"] >= 2
+    assert any(p["monto_prometido"] == 5000.0 for p in lista["promesas"])
+
+    with pytest.raises(ValueError, match="No existe la cuenta"):
+        tools.register_payment_promise(cuenta_id=9999, monto_prometido=100.0, dias_plazo=1)
+
+    with pytest.raises(ValueError):
+        tools.register_payment_promise(cuenta_id=1, monto_prometido=100.0)

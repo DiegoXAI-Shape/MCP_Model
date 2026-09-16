@@ -10,9 +10,9 @@ Dos motores (--backend):
     necesita API key; corre con la sesion de Claude Code ya autenticada.
   * api: llama directo a la Messages API. Necesita ANTHROPIC_API_KEY en .env.
 
-    python host.py "Dame un resumen ejecutivo de la cartera"
-    python host.py --demo                       # 4 interfaces de ejemplo
-    python host.py --backend api --model claude-opus-5 "..."
+    python src/backend/host.py "Dame un resumen ejecutivo de la cartera"
+    python src/backend/host.py --demo                       # 4 interfaces de ejemplo
+    python src/backend/host.py --backend api --model claude-opus-5 "..."
 """
 
 from __future__ import annotations
@@ -29,16 +29,18 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-import tools_core
-from server import server as mcp_server
+try:
+    from . import tools
+    from .server import server as mcp_server
+except ImportError:
+    import tools
+    from server import server as mcp_server
 
-RAIZ = Path(__file__).resolve().parent
+RAIZ = Path(__file__).resolve().parents[2]
 OUT = RAIZ / "out"
 MANIFEST = OUT / "manifest.json"
 MCP_CONFIG = RAIZ / "mcp.config.json"
 
-# Sonnet por defecto: el host se corre muchas veces al iterar y las interfaces
-# que pide son sencillas. Con --model claude-opus-5 sube el acabado visual.
 MODELO_POR_DEFECTO = "claude-sonnet-5"
 
 SYSTEM_PROMPT = """\
@@ -60,6 +62,9 @@ Reglas de la interfaz:
 - Nada de <script> salvo que sea imprescindible para una interaccion trivial.
 - Formatea el dinero como "$1,234,567 MXN". Muestra la fecha de corte.
 - Debe caber en una pantalla y no provocar scroll horizontal.
+- Ningun texto o elemento grafico debe sobreponerse a otro: respeta espaciado,
+  usa flex/grid y nunca posiciones absolutas que puedan pisarse entre si.
+- Nunca uses emojis en el HTML generado.
 - Todo el texto en espanol de Mexico.
 """
 
@@ -72,22 +77,22 @@ DEMO = [
 
 
 # --------------------------------------------------------------------------- #
-# Herramientas: esquema desde el servidor MCP, ejecucion desde tools_core
+# Herramientas: esquema desde el servidor MCP, ejecucion desde tools
 # --------------------------------------------------------------------------- #
 def cargar_tools() -> list[dict]:
-    tools = asyncio.run(mcp_server.list_tools())
+    tools_list = asyncio.run(mcp_server.list_tools())
     return [
         {
             "name": t.name,
             "description": (t.description or "").strip(),
             "input_schema": t.input_schema,
         }
-        for t in tools
+        for t in tools_list
     ]
 
 
 def ejecutar_tool(nombre: str, args: dict) -> dict:
-    fn = tools_core.TOOLS.get(nombre)
+    fn = tools.TOOLS.get(nombre)
     if fn is None:
         return {"error": f"herramienta desconocida: {nombre}"}
     try:
@@ -169,7 +174,7 @@ def generar_api(pregunta: str, modelo: str) -> dict:
     from anthropic import Anthropic
 
     client = Anthropic()
-    tools = cargar_tools()
+    tools_list = cargar_tools()
     messages: list[dict] = [{"role": "user", "content": pregunta}]
     tools_usadas: list[str] = []
     tok_in = tok_out = 0
@@ -179,7 +184,7 @@ def generar_api(pregunta: str, modelo: str) -> dict:
             model=modelo,
             max_tokens=8000,
             system=SYSTEM_PROMPT,
-            tools=tools,
+            tools=tools_list,
             messages=messages,
         )
         tok_in += resp.usage.input_tokens

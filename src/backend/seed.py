@@ -2,8 +2,8 @@
 seed.py -- Genera una cartera de cobranza sintetica y reproducible en SQLite.
 
 Uso:
-    python seed.py                     # crea cobranza.db (borra el anterior)
-    python seed.py --db otra.db --seed 7
+    python src/backend/seed.py                     # crea cobranza.db en la raíz del repo
+    python src/backend/seed.py --db otra.db --seed 7
 
 El objetivo es tener datos realistas del dominio de cobranza: deudores,
 cuentas con distintos niveles de mora, pagos (totales y parciales) y
@@ -22,6 +22,8 @@ import sqlite3
 from pathlib import Path
 
 from faker import Faker
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 HOY = dt.date(2026, 9, 1)
 
@@ -266,7 +268,7 @@ def construir(db_path: Path, seed: int) -> dict[str, int]:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="Genera la cartera de cobranza sintetica.")
-    ap.add_argument("--db", default=Path("cobranza.db"), type=Path)
+    ap.add_argument("--db", default=REPO_ROOT / "cobranza.db", type=Path)
     ap.add_argument("--seed", default=42, type=int)
     args = ap.parse_args()
 
