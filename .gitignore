@@ -3,8 +3,10 @@
 venv/
 .venv/
 
-# Datos generados
+# Datos generados y logs
 *.db
+*.db-journal
+*.log
 out/
 
 # Python
@@ -21,8 +23,9 @@ src/frontend/node_modules/
 src/frontend/dist/
 src/frontend/.astro/
 
-# IDE y agentes
+# IDE, editores y agentes
 .claude/
 .vscode/
 .idea/
-
+.DS_Store
+Thumbs.db
